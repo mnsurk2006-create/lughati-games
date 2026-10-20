@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>الفاعل - الصف الرابع</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue: #2a9df0; --blue-d: #1180d1; --red: #e0283b; --red-d: #b9172a;
+  --orange: #ff7b0a; --orange-d: #e26505; --green: #2a9354; --green-d: #1d7840;
+  --ink: #111; --muted: #666; --bg: #fff; --bar: #f2f2f2;
+  --font: "Baloo Bhaijaan 2", "Segoe UI", Tahoma, sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); font-family: var(--font); overflow: hidden; }
+button { font-family: inherit; cursor: pointer; }
+.app { position: fixed; inset: 0; display: flex; flex-direction: column; }
+
+/* top */
+.top { display: flex; justify-content: space-between; align-items: center; padding: 8px 14px 0; font-size: clamp(18px, 2.6vw, 30px); font-weight: 500; direction: ltr; }
+.top .score { display: flex; gap: 6px; align-items: center; }
+
+/* question */
+.q { padding: 0 14px; text-align: center; display: flex; flex-direction: column; justify-content: center; min-height: 26vh; }
+.q h1 { margin: 0; font-size: clamp(26px, 5.4vw, 64px); font-weight: 800; line-height: 1.35; }
+.q .s { font-size: clamp(28px, 5.8vw, 70px); font-weight: 800; color: #1a4fa0; line-height: 1.5; }
+.q .gap { display: inline-block; min-width: 2.4em; border-bottom: 6px solid #ff7b0a; margin: 0 6px; }
+
+/* tiles */
+.grid { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 1.6vh 1.4vw; padding: 1vh 10vw 2vh; }
+.tile { position: relative; border: 0; border-radius: 10px; color: #fff; font-size: clamp(26px, 5.2vw, 72px); font-weight: 800; line-height: 1.25; padding: 8px 18px;
+  display: flex; align-items: center; justify-content: center; text-align: center;
+  box-shadow: inset 0 0 0 10px rgba(255,255,255,.12), inset 0 -10px 0 rgba(0,0,0,.18), 0 4px 0 rgba(0,0,0,.06); transition: opacity .25s, transform .08s; }
+.tile.ui { font-size: clamp(22px, 3.8vw, 52px); }
+.tile:active { transform: translateY(2px); }
+.t0 { background: linear-gradient(var(--blue), var(--blue-d)); }
+.t1 { background: linear-gradient(var(--red), var(--red-d)); }
+.t2 { background: linear-gradient(var(--orange), var(--orange-d)); }
+.t3 { background: linear-gradient(var(--green), var(--green-d)); }
+.tile.fade { opacity: .22; }
+.tile .mk { position: absolute; top: 50%; left: 6%; transform: translateY(-50%); font-size: .8em; opacity: .85; }
+
+/* bottom */
+.bottom { display: flex; justify-content: space-between; align-items: center; padding: 6px 14px 10px; direction: ltr; }
+.round { width: 46px; height: 46px; border-radius: 50%; border: 0; background: #333; color: #fff; display: grid; place-items: center; font-size: 18px; }
+.nav { display: flex; align-items: center; gap: 14px; font-size: clamp(18px, 2.4vw, 28px); }
+.nav button { background: none; border: 0; font-size: 34px; line-height: 1; color: #222; padding: 0 4px; }
+.nav button:disabled { color: #ccc; cursor: default; }
+.icons { display: flex; gap: 14px; }
+.icons button { background: none; border: 0; font-size: 30px; color: #222; }
+button:focus-visible { outline: 4px solid #ffb703; outline-offset: 3px; }
+
+/* overlays */
+.screen { position: absolute; inset: 0; background: rgba(0,0,0,.72); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2.4vh; color: #fff; text-align: center; padding: 20px; z-index: 5; }
+.screen[hidden] { display: none; }
+.screen .ghost { position: absolute; inset: 0; z-index: -1; filter: blur(2px); opacity: .25; }
+.screen .kind { font-size: clamp(22px, 3.4vw, 40px); font-weight: 700; }
+.screen h2 { margin: 0; font-size: clamp(48px, 9vw, 110px); font-weight: 800; line-height: 1.1; }
+.screen p { margin: 0; font-size: clamp(18px, 2.6vw, 30px); opacity: .9; }
+.bigbtn { display: flex; flex-direction: column; align-items: center; gap: 6px; background: rgba(0,0,0,.35); color: #fff; border: 2px solid rgba(255,255,255,.6); border-radius: 12px; padding: 16px 30px; font-size: clamp(20px, 2.6vw, 28px); font-weight: 700; min-width: 140px; }
+.bigbtn .ic { font-size: 44px; line-height: 1; color: #2a9df0; }
+.row { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+.result { font-size: clamp(60px, 12vw, 140px); font-weight: 800; line-height: 1; direction: ltr; }
+.answers { background: #fff; color: #111; border-radius: 14px; width: min(900px, 94vw); max-height: 52vh; overflow: auto; text-align: right; padding: 8px 14px; }
+.ans { display: grid; grid-template-columns: 40px 1fr; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px solid #eee; }
+.ans:last-child { border-bottom: 0; }
+.ans .i { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-weight: 800; }
+.ans .i.ok { background: var(--green); } .ans .i.no { background: var(--red); }
+.ans .qq { font-size: 18px; color: #555; }
+.ans .aa { font-size: 24px; font-weight: 800; }
+.ans .aa s { color: var(--red); font-weight: 600; font-size: .8em; margin-right: 10px; }
+.brand { position: absolute; bottom: 10px; font-size: 15px; opacity: .7; }
+@media (max-width: 640px) { .grid { grid-template-columns: 1fr; padding: 1vh 4vw 2vh; } .q { min-height: 20vh; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <div class="top"><span id="time">0:00</span><span class="score">✓ <b id="score">0</b></span></div>
+  <div class="q" id="q"></div>
+  <div class="grid" id="grid"></div>
+  <div class="bottom">
+    <button class="round" id="pause" aria-label="إيقاف مؤقت">❚❚</button>
+    <div class="nav"><button id="prev" aria-label="السابق">◁</button><span id="count">1 من 12</span><button id="next" aria-label="التالي">▷</button></div>
+    <div class="icons"><button id="sound" aria-label="الصوت">🔊</button><button id="full" aria-label="ملء الشاشة">⛶</button></div>
+  </div>
+  <div class="screen" id="screen"></div>
+</div>
+
+<script>
+// first option in every question is the correct one; they are shuffled on screen
+const DATA = [
+  { q: 'الفاعلُ في جملةِ:', s: 'وَصَلَ مِشْعَلٌ إِلَى المَكَانِ المُحَدَّدِ', o: ['مِشْعَلٌ', 'وَصَلَ', 'المَكَانِ', 'المُحَدَّدِ'] },
+  { q: 'الفاعلُ اسمٌ يدلُّ على:', o: ['مَن قامَ بالفعلِ', 'مَن وقعَ عليه الفعلُ', 'زمنِ الفعلِ', 'مكانِ الفعلِ'], ui: true },
+  { q: 'الفاعلُ في جملةِ:', s: 'زَارَ فَوَّازٌ الضَّوَاحِيَ القَرِيبَةَ', o: ['فَوَّازٌ', 'زَارَ', 'الضَّوَاحِيَ', 'القَرِيبَةَ'] },
+  { q: 'أختارُ الفاعلَ المناسبَ:', s: 'يَخْبِزُ _ الخُبْزَ', o: ['الخَبَّازُ', 'الطَّبِيبُ', 'المُزَارِعُ', 'النَّجَّارُ'] },
+  { q: 'تتكوّنُ الجملةُ الفعليةُ من:', o: ['الفعلِ والفاعلِ', 'المبتدأِ والخبرِ', 'الفعلِ والحرفِ', 'الاسمِ والحرفِ'], ui: true },
+  { q: 'الفاعلُ في جملةِ:', s: 'يَتَعَاوَنُ النَّاسُ فِي الحِفَاظِ عَلَى بِيئَتِهِمْ', o: ['النَّاسُ', 'يَتَعَاوَنُ', 'الحِفَاظِ', 'بِيئَتِهِمْ'] },
+  { q: 'الفاعلُ دائمًا:', o: ['مرفوعٌ', 'منصوبٌ', 'مجرورٌ', 'مجزومٌ'] },
+  { q: 'أختارُ الفاعلَ المناسبَ:', s: 'شَرَحَتِ _ الدَّرْسَ', o: ['المُعَلِّمَةُ', 'السَّبُّورَةُ', 'الحَقِيبَةُ', 'الطَّاوِلَةُ'] },
+  { q: 'الفاعلُ في جملةِ:', s: 'طَافَ الحَاجُّ حَوْلَ الكَعْبَةِ', o: ['الحَاجُّ', 'طَافَ', 'حَوْلَ', 'الكَعْبَةِ'] },
+  { q: 'علامةُ رفعِ الفاعلِ في جملةِ:', s: 'يَلْمَعُ النَّجْمُ', o: ['الضمّةُ', 'الفتحةُ', 'الكسرةُ', 'السكونُ'] },
+  { q: 'أختارُ الفاعلَ المناسبَ:', s: 'يُعَالِجُ _ المَرِيضَ', o: ['الطَّبِيبُ', 'الخَبَّازُ', 'الكِتَابُ', 'القَلَمُ'] },
+  { q: 'يأتي الفاعلُ في الجملةِ الفعليةِ:', o: ['بعدَ الفعلِ', 'قبلَ الفعلِ', 'في أولِ الجملةِ', 'في آخرِ الجملةِ دائمًا'], ui: true },
+];
+
+const $ = id => document.getElementById(id);
+const shuffle = a => a.map(v => [Math.random(), v]).sort((x, y) => x[0] - y[0]).map(v => v[1]);
+let i = 0, score = 0, answers = [], opts = [], t = 0, timer = null, paused = false, soundOn = true, locked = false, ctx = null, advance = null;
+
+function beep(ok) {
+  if (!soundOn) return;
+  try {
+    ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = ok ? 'triangle' : 'square';
+    const now = ctx.currentTime;
+    if (ok) { o.frequency.setValueAtTime(660, now); o.frequency.setValueAtTime(990, now + .1); }
+    else { o.frequency.setValueAtTime(220, now); o.frequency.setValueAtTime(160, now + .15); }
+    g.gain.setValueAtTime(.18, now); g.gain.exponentialRampToValueAtTime(.001, now + .35);
+    o.connect(g).connect(ctx.destination); o.start(now); o.stop(now + .36);
+  } catch (e) {}
+}
+const fmt = s => Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+function startTimer() { clearInterval(timer); timer = setInterval(() => { if (!paused) { t++; $('time').textContent = fmt(t); } }, 1000); }
+
+function show() {
+  clearTimeout(advance);
+  const d = DATA[i];
+  locked = answers[i] !== undefined;
+  $('count').textContent = (i + 1) + ' من ' + DATA.length;
+  $('prev').disabled = i === 0;
+  const filled = locked && d.s && d.s.includes('_') ? d.s.replace('_', `<span class="gap">${d.o[0]}</span>`) : d.s ? d.s.replace('_', '<span class="gap">&nbsp;</span>') : '';
+  $('q').innerHTML = `<h1>${d.q}</h1>${d.s ? `<div class="s">${filled}</div>` : ''}`;
+  if (!opts[i]) opts[i] = shuffle(d.o.map((txt, k) => ({ txt, ok: k === 0 })));
+  $('grid').innerHTML = opts[i].map((o, k) => `<button class="tile t${k}${d.ui ? ' ui' : ''}" data-k="${k}">${o.txt}</button>`).join('');
+  document.querySelectorAll('.tile').forEach(b => b.onclick = () => pick(+b.dataset.k));
+  if (locked) mark(answers[i].k);
+}
+
+function mark(k) {
+  const tiles = [...document.querySelectorAll('.tile')], right = opts[i].findIndex(o => o.ok);
+  tiles.forEach((b, n) => {
+    if (n === right) b.insertAdjacentHTML('beforeend', '<span class="mk">✓</span>');
+    else if (n === k) b.insertAdjacentHTML('beforeend', '<span class="mk">✕</span>');
+    else b.classList.add('fade');
+  });
+}
+
+function pick(k) {
+  if (locked || paused) return;
+  locked = true;
+  const ok = opts[i][k].ok;
+  answers[i] = { k, ok };
+  if (ok) score++;
+  $('score').textContent = score;
+  beep(ok);
+  mark(k);
+  const d = DATA[i];
+  if (d.s && d.s.includes('_')) document.querySelector('.gap').textContent = d.o[0];
+  advance = setTimeout(() => { if (i < DATA.length - 1) { i++; show(); } else finish(); }, ok ? 1400 : 2400);
+}
+
+function startScreen() {
+  $('screen').hidden = false;
+  $('screen').innerHTML = `<div class="kind">اختبار</div><h2>الفاعل</h2><p>لغتي الجميلة · الصف الرابع</p>
+    <div class="row"><button class="bigbtn" id="play"><span class="ic">▶</span>ابدئي</button></div>
+    <p>أسئلةُ اختيارٍ من متعدّد. اضغطي على الإجابةِ الصحيحةِ للمتابعة.</p><div class="brand">إعداد: دائرة</div>`;
+  $('play').onclick = begin;
+}
+
+function begin() {
+  i = 0; score = 0; answers = []; opts = []; t = 0; paused = false;
+  $('score').textContent = 0; $('time').textContent = '0:00';
+  $('screen').hidden = true; show(); startTimer();
+}
+
+function finish() {
+  clearInterval(timer);
+  const n = DATA.length;
+  const word = score === n ? 'ممتاز! أتقنتِ درسَ الفاعل' : score >= n * .75 ? 'أحسنتِ!' : score >= n / 2 ? 'جيّد، وتستطيعين الأفضل' : 'نراجعُ القاعدةَ ونحاولُ مرةً أخرى';
+  $('screen').hidden = false;
+  $('screen').innerHTML = `<div class="kind">النتيجة</div><div class="result">${score} / ${n}</div><p>${word} · الوقت ${fmt(t)}</p>
+    <div class="row"><button class="bigbtn" id="showAns"><span class="ic">👁</span>إظهار الإجابات</button><button class="bigbtn" id="again"><span class="ic">↻</span>ابدئي من جديد</button></div>
+    <div class="answers" id="ans" hidden>${DATA.map((d, k) => {
+      const a = answers[k], pickTxt = a ? opts[k][a.k].txt : '—';
+      return `<div class="ans"><span class="i ${a && a.ok ? 'ok' : 'no'}">${a && a.ok ? '✓' : '✕'}</span><div><div class="qq">${d.q} ${d.s ? d.s.replace('_', '……') : ''}</div><div class="aa">${d.o[0]}${a && a.ok ? '' : `<s>${pickTxt}</s>`}</div></div></div>`;
+    }).join('')}</div>`;
+  $('showAns').onclick = () => { const a = $('ans'); a.hidden = !a.hidden; };
+  $('again').onclick = begin;
+}
+
+$('prev').onclick = () => { if (i > 0) { i--; show(); } };
+$('next').onclick = () => { if (i < DATA.length - 1) { i++; show(); } else finish(); };
+$('pause').onclick = () => {
+  paused = !paused; $('pause').textContent = paused ? '▶' : '❚❚';
+  if (paused) { $('screen').hidden = false; $('screen').innerHTML = `<h2>إيقاف مؤقت</h2><div class="row"><button class="bigbtn" id="resume"><span class="ic">▶</span>متابعة</button></div>`; $('resume').onclick = $('pause').onclick; }
+  else $('screen').hidden = true;
+};
+$('sound').onclick = () => { soundOn = !soundOn; $('sound').textContent = soundOn ? '🔊' : '🔇'; };
+$('full').onclick = () => { try { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); } catch (e) {} };
+
+opts = []; show(); startScreen();
+</script>
+</body>
+</html>
